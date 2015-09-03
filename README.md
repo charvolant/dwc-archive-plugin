@@ -3,6 +3,7 @@
 A plugin for the ala-collectory that provides tools for
 checking [Darwin Core Archives](http://www.gbif.org/resource/80636)
 (DwCA) for various useful features that the ALA needs.
+ 
 
 ##Functions
 
@@ -37,6 +38,8 @@ using a .json, .xml or .html extension will return a suitably formatted report.
 Eg. `/ws/archive/check.xml?source=http://somewhere.com/archive.zip` will return an XML report.
 
 ##Dependencies
+
+To use the plugin, add `runtime ":dwc-archive:0.1-SNAPSHOT"` to the plugins list in `BuildConfig.groovy`
 
 * https://github.com/AtlasOfLivingAustralia/ala-collectory
 
