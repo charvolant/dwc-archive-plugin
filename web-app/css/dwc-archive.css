@@ -1,0 +1,85 @@
+div#dwca-check-form {
+    margin-top: 2ex;
+    margin-bottom: 2ex;
+}
+
+div.dwca-violations tr:nth-child(odd) {
+    background-color: #f9e0e0;
+}
+div.dwca-violations tr:nth-child(even) {
+    background-color: white;
+}
+
+div.dwca-cautions tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+div.dwca-cautions tr:nth-child(even) {
+    background-color: white;
+}
+
+
+.dwca-location {
+    padding-left: 0.5ex;
+    padding-right: 1ex;
+    vertical-align: top;
+}
+
+.dwca-message {
+    padding-left: 1ex;
+    padding-right: 1ex;
+}
+
+.dwca-message .dwca-detail {
+    height: 20px;
+    width: 20px;
+}
+
+.dwca-reference {
+    vertical-align: top;
+    padding-left: 1ex;
+    padding-right: 0.5ex;
+}
+
+.dwca-detail {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    text-indent: -9999px;
+    background: url(information.png);
+}
+
+.dwca-reference a {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    text-indent: -9999px;
+    background: url(reference.png);
+}
+
+
+#dwca-validator input[type="url"],input[type="text"] {
+    width: 64ex;
+}
+
+#dwca-validator div.text-input,div.checkbox-input {
+    margin: 0.2ex 2ex;
+}
+
+#dwca-validator div.text-input label {
+    display: inline-block;
+    width: 140px; /* Use absolutes because font sizes change */
+}
+
+#dwca-validator div.text-input input {
+    display: inline-block;
+}
+
+#dwca-validator div.checkbox-input input {
+    display: inline-block;
+    margin-left: 140px;
+}
+
+#dwca-validator div.checkbox-input label {
+}
+
+

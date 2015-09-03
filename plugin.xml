@@ -1,0 +1,15 @@
+<plugin name='dwc-archive' version='0.1-SNAPSHOT' grailsVersion='2.3 &gt; *'>
+  <author>Doug Palmer</author>
+  <authorEmail>Doug.Palmer@csiro.au</authorEmail>
+  <title>Dwc Archive Plugin</title>
+  <description>A plugin to provide DwCA validation services for the collectory.
+</description>
+  <documentation>http://githib.com/AtlasOfLivingAustralia/dwc-archive</documentation>
+  <type>DwcArchiveGrailsPlugin</type>
+  <resources>
+    <resource>DwcArchiveUrlMappings</resource>
+    <resource>au.org.ala.data.dwca.ArchiveController</resource>
+    <resource>au.org.ala.data.dwca.ImageArchiveService</resource>
+    <resource>au.org.ala.data.dwca.web.ArchiveTagLib</resource>
+  </resources>
+</plugin>
