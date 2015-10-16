@@ -16,62 +16,12 @@
         <p><g:message code="page.index.blurb"/></p>
     </div>
 
-    <div id="dwca-validator">
-        <h2><g:message code="page.index.validator"/></h2>
-        <p><g:message code="page.index.validator.blurb"/></p>
-        <g:hasErrors bean="${configuration}">
-            <div class="errors">
-                <g:renderErrors bean="${configuration}" as="list" />
-            </div>
-        </g:hasErrors>
-        <g:form>
-            <fieldset>
-                <div class="text-input">
-                    <label for="check_source"><g:message code="page.label.source"/></label>
-                    <g:field type="url" id="check_source" name="source" class="form-control" required="true"
-                             value="${configuration?.source}" title="${message(code: 'page.label.source.detail')}"/>
-                </div>
-
-                <div class="checkbox-input">
-                    <g:checkBox id="check_records" name="checkRecords" class="form-control"
-                                value="${configuration?.checkRecords}"
-                                title="${message(code: 'page.label.checkRecords.detail')}"/>
-                    <label for="check_records"><g:message code="page.label.checkRecords"/></label>
-                </div>
-
-                <div class="checkbox-input">
-                    <g:checkBox id="check_unique_terms" name="checkUniqueTerms" class="form-control"
-                                value="${configuration?.checkUniqueTerms}"
-                                title="${message(code: 'page.label.checkUniqueTerms.detail')}"/>
-                    <label for="check_unique_terms"><g:message code="page.label.checkUniqueTerms"/></label>
-                </div>
-
-                <div class="text-input">
-                    <label for="unique_terms"><g:message code="page.label.uniqueTerms"/></label>
-                    <g:textField id="unique_terms" name="uniqueTermList" class="form-control"
-                                value="${configuration?.uniqueTermList}"
-                                title="${message(code: 'page.label.uniqueTerms.detail')}"/>
-                </div>
-
-                <div class="checkbox-input">
-                    <g:checkBox id="check_images" name="checkImages" class="form-control"
-                                value="${configuration?.checkImages}"
-                                title="${message(code: 'page.label.checkImages.detail')}"/>
-                    <label for="check_images"><g:message code="page.label.checkImages"/></label>
-                </div>
-
-                <div class="checkbox-input">
-                    <g:checkBox id="check_presence" name="checkPresence" class="form-control"
-                                value="${configuration?.checkPresence}"
-                                title="${message(code: 'page.label.checkPresence.detail')}"/>
-                    <label for="check_presence"><g:message code="page.label.checkPresence"/></label>
-                </div>
-            </fieldset>
-
-            <div class="form-submit">
-                <g:actionSubmit action="checkImageArchive" value="${message(code: 'page.label.validate')}"/>
-            </div>
-        </g:form>
+    <div id="archive-options">
+        <h2><g:message code="page.index.services"/></h2>
+        <ul>
+            <li><g:link action="validateArchive"><g:message code="page.validate-archive.title"/></g:link></li>
+            <li><g:link action="flattenMeasurementArchive"><g:message code="page.flatten-measurement-archive.title"/></g:link></li>
+        </ul>
     </div>
 
     <div id="resources">

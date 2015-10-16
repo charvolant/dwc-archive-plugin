@@ -82,4 +82,11 @@ div.dwca-cautions tr:nth-child(even) {
 #dwca-validator div.checkbox-input label {
 }
 
+input.source-url {
+    width: 64ex;
+}
+
+input.dwca-term {
+    width: 64ex;
+}
 

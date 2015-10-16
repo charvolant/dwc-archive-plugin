@@ -17,7 +17,7 @@ A plugin to provide DwCA validation services for the collectory.
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://githib.com/AtlasOfLivingAustralia/dwc-archive"
+    def documentation = "http://githib.com/AtlasOfLivingAustralia/dwc-archive-plugin"
 
     // Extra (optional) plugin metadata
 
@@ -32,10 +32,10 @@ A plugin to provide DwCA validation services for the collectory.
 
     // Location of the plugin's issue tracker.
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "github", url: "https://github.com/AtlasOfLivingAustralia/dwc-archive/issues" ]
+    def issueManagement = [ system: "github", url: "https://github.com/AtlasOfLivingAustralia/dwc-archive-plugin/issues" ]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "https://github.com/AtlasOfLivingAustralia/dwc-archive" ]
+    def scm = [ url: "https://github.com/AtlasOfLivingAustralia/dwc-archive-plugin" ]
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before

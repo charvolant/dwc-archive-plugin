@@ -1,18 +1,27 @@
 package au.org.ala.data.dwca
 
+import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import grails.converters.JSON
 import grails.converters.XML
 
 class ArchiveController {
     def imageArchiveService
+    def measurementArchiveService
     def messageSource
 
     /**
      * Get an index of actions
      */
     def index() {
+        render(view: "index")
+    }
+
+    /**
+     * Validate a DwC archive
+     */
+    def validateArchive() {
         def configuration = new CheckConfiguration()
-        render(view: "index", model: [configuration: configuration])
+        render(view: "validate-archive", model: [configuration: configuration])
     }
 
     /**
@@ -20,7 +29,7 @@ class ArchiveController {
      *
      * @param configuration The check configuration
      */
-    def checkImageArchive() {
+    def checkArchive() {
         def configuration = new CheckConfiguration()
         bindData(configuration, params)
         if (configuration.hasErrors()) {
@@ -38,8 +47,35 @@ class ArchiveController {
             withFormat {
                 json { render model as JSON }
                 xml { render model as XML }
-                '*' { render(view: "report", model: model) }
+                '*' { render(view: "validate-archive-report", model: model) }
             }
         }
+    }
+
+    def flattenMeasurementArchive() {
+        def configuration = new MeasurementConfiguration()
+        render(view: "flatten-measurement-archive", model: [configuration: configuration])
+    }
+
+    def collectMeasurementTerms() {
+        def configuration = new MeasurementConfiguration()
+        bindData(configuration, params)
+        configuration.terms = measurementArchiveService.collectTerms(configuration.source)
+        def model = [configuration: configuration]
+        withFormat {
+            json { render model as JSON }
+            xml { render model as XML }
+            '*' { render(view: "flatten-measurement-archive-terms", model: model) }
+        }
+    }
+
+    def flattenMeasurementArchiveTerms() {
+        def configuration = new MeasurementConfiguration()
+        bindData(configuration, params)
+        def archive = measurementArchiveService.pivot(configuration)
+
+        log.warn "Archive content is: ${archive}"
+        render(archive)
+        //archive.file.delete()
     }
 }

@@ -3,10 +3,10 @@ package au.org.ala.data.dwca
 import au.org.ala.util.ResourceExtractor
 import grails.transaction.Transactional
 
-@Transactional
 @Mixin(ResourceExtractor)
 class ImageArchiveService {
-    def grailsApplication
+    def archiveService
+
     /**
      * Check a DwCA archive unzipped into a location
      *
@@ -16,40 +16,17 @@ class ImageArchiveService {
      */
     def check(CheckConfiguration command) {
         log.debug("Check file at ${command.source}")
-        def workDir = new File(grailsApplication.config.workDir)
-        workDir = File.createTempFile("image-check", "", workDir)
-        try {
-            workDir.delete()
-            workDir.mkdirs()
-            log.debug("Work file for ${command.source} is ${workDir}")
-            def zipFile = new File(workDir, "archive.zip")
-            extractResource(command.source, zipFile)
-            def unzippedFolderLocation = new File(workDir, "unzipped")
-            unzippedFolderLocation.mkdirs()
-            unzip(zipFile, unzippedFolderLocation, false)
-            def checker = new DwCArchiveChecker(unzippedFolderLocation, command)
+        archiveService.withDwCA(command.source,
+                { File dir ->
+                    def checker = new DwCArchiveChecker(dir, command)
+                    checker.check()
+                    return checker.report
+                },
+                { Exception ex ->
+                    def report = new Report()
+                    report.addViolation(null, "archive.source", ex.getLocalizedMessage())
+                    return report
 
-            checker.check()
-            return checker.report
-        } catch (IOException ex) {
-            return reportException(ex)
-        } finally {
-            removeDir(workDir)
-            log.debug("Cleaned up ${workDir}")
-        }
-    }
-
-    /**
-     * Generate an violation from an exception
-     *
-     * @param ex The source exception
-     *
-     * @return A report about the excepiton
-     */
-    def reportException(Exception ex) {
-        def report = new Report()
-
-        report.addViolation(null, "archive.source", ex.getLocalizedMessage())
-        return report
+                })
     }
 }

@@ -4,9 +4,7 @@ class DwcArchiveUrlMappings {
             format = { params.rformat ?: 'json' }
         }
         "/archive"(controller: 'archive', action: 'index')
-        "/archive/check"(controller: 'archive', action: 'checkImageArchive') {
-            format = 'html'
-        }
+        "/archive/$action"(controller: 'archive')
         "500"(view: '/error')
     }
 }

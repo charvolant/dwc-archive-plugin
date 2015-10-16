@@ -33,6 +33,9 @@ grails.project.dependency.resolution = {
         mavenRepo ("http://nexus.ala.org.au/content/groups/public/") {
             updatePolicy 'always'
         }
+        mavenRepo ("https://maven.java.net/service/local/repositories/snapshots/content/") {
+            updatePolicy 'always'
+        }
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenRepo "http://repository.codehaus.org"
@@ -41,6 +44,8 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         compile 'org.gbif:dwca-reader:1.21'
+        compile 'org.jscience:jscience:4.3.1'
+        compile 'net.sf.opencsv:opencsv:2.3'
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.27'
     }
