@@ -1,5 +1,7 @@
 package au.org.ala.data.dwca
 
+import au.org.ala.data.dwca.measurement.MeasurementConfiguration
+import au.org.ala.util.AlaTerm
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -9,16 +11,20 @@ import spock.lang.Specification
 @TestFor(MeasurementArchiveService)
 class MeasurementArchiveServiceSpec extends Specification {
     MeasurementArchiveService service
+    def response = null
 
     def setup() {
         grailsApplication.config.workDir = System.getProperty("user.dir")
         service = new MeasurementArchiveService()
+        service.grailsApplication = grailsApplication
         service.archiveService = new ArchiveService()
         service.archiveService.grailsApplication = grailsApplication
     }
 
 
     def cleanup() {
+        if (response != null)
+            response.file.delete()
     }
 
     void "test collect terms 1"() {
@@ -39,4 +45,20 @@ class MeasurementArchiveServiceSpec extends Specification {
         terms[2].simpleName() == "samplerGroupName"
         terms[3].simpleName() == "turbidityInNtus"
     }
+
+
+    void "test pivot 1"() {
+        when:
+        def config = new MeasurementConfiguration(
+                source: this.class.getResource("bdrs1.zip"),
+                terms: [
+                        new AlaTerm(term: 'availablePhosphateInMilligramPerLitre', measurementType: 'Available Phosphate (mg/L)')
+                ]
+        )
+        response = service.pivot(config)
+        then:
+        response.file.exists()
+        response.contentType == "text/csv"
+    }
+
 }

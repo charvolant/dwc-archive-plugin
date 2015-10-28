@@ -10,8 +10,7 @@ import org.gbif.dwc.text.DwcaWriter
 /**
  * Generic Dawrin Core Archive services
  */
-@Mixin(ResourceExtractor)
-class ArchiveService {
+class ArchiveService extends ResourceExtractor {
     def grailsApplication
 
     /**
