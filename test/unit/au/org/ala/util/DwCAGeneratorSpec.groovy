@@ -81,8 +81,8 @@ class DwCAGeneratorSpec extends Specification {
         when:
         def g = new DwCAGenerator<Map<Term, String>>(terms, working, { record, term -> record[term] })
         g.begin()
-        g.write(values)
-        g.write(values)
+        g.write(values.iterator())
+        g.write(values.iterator())
         dwca = g.finish()
         g.cleanup()
         then:
