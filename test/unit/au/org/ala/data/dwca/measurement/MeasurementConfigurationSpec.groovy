@@ -1,6 +1,11 @@
 package au.org.ala.data.dwca.measurement
 
 import au.org.ala.util.AlaTerm
+import grails.test.mixin.TestMixin
+import grails.test.mixin.web.ControllerUnitTestMixin
+import org.apache.commons.fileupload.FileItem
+import org.apache.commons.fileupload.FileItemHeaders
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 import spock.lang.Specification
 
 /**
@@ -8,8 +13,10 @@ import spock.lang.Specification
 
  * Copyright (c) 2015 CSIRO
  */
+@TestMixin(ControllerUnitTestMixin)
 class MeasurementConfigurationSpec extends Specification {
     def setup() {
+        mockCommandObject(MeasurementConfiguration)
     }
 
     def cleanup() {
@@ -40,5 +47,33 @@ class MeasurementConfigurationSpec extends Specification {
         map.containsKey('Something else')
         map['Something else'] == term2
     }
+
+    void "test validation 1"() {
+        when:
+        def config = new MeasurementConfiguration(source: new URL("http://localhost"))
+        def valid = config.validate()
+        config.errors.allErrors.each {
+            println it
+        }
+        then:
+        valid
+    }
+
+    void "test validation 2"() {
+        when:
+        def config = new MeasurementConfiguration()
+        def valid = config.validate()
+        then:
+        !valid
+    }
+
+    void "test validation 3"() {
+        when:
+        def config = new MeasurementConfiguration(format: 'xxx')
+        def valid = config.validate()
+        then:
+        !valid
+    }
+
 
 }

@@ -6,6 +6,7 @@ import org.gbif.dwc.terms.Term
 import org.gbif.dwc.text.Archive
 import org.gbif.dwc.text.ArchiveFactory
 import org.gbif.dwc.text.DwcaWriter
+import org.springframework.scheduling.annotation.Scheduled
 
 /**
  * Generic Dawrin Core Archive services
@@ -51,5 +52,16 @@ class ArchiveService extends ResourceExtractor {
             removeDir(workDir)
             log.debug("Cleaned up ${workDir}")
         }
+    }
+
+    /**
+     * Clean the wotking directory of any files that have
+     */
+    def cleanup() {
+        def workDir = new File(grailsApplication.config.workDir)
+        def before = new Date(System.currentTimeMillis() - grailsApplication.config.temporaryFileLifetime)
+
+        log.debug "Cleaning ${workDir} of files before ${before}"
+        cleanDir(workDir, before, false, log)
     }
 }

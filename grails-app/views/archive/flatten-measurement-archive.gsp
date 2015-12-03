@@ -22,19 +22,29 @@
                 <g:renderErrors bean="${configuration}" as="list" />
             </div>
         </g:hasErrors>
-        <g:form>
+        <g:uploadForm>
             <fieldset>
                 <div class="text-input">
                     <label for="archive_source"><g:message code="page.label.source"/></label>
-                    <g:field type="url" id="archive_source" name="source" class="form-control source-url" required="true"
+                    <g:field type="url" id="archive_source" name="source" class="form-control source-url" placeholder="http://host.com/path/archive.zip"
                              value="${configuration?.source}" title="${message(code: 'page.label.source.detail')}"/>
+                    <label for="archive_file"><g:message code="page.label.sourceFile"/></label>
+                    <g:field type="file" id="archive_file" name="sourceFile" class="form-control"
+                             value="${configuration?.sourceFile?.originalFilename}" title="${message(code: 'page.label.sourceFile.detail')}"/>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="text-input">
+                    <label for="archive_mapping"><g:message code="page.label.mappingFile"/></label>
+                    <g:field type="file" id="archive_mapping" name="mappingFile" class="form-control"
+                             value="${configuration?.mappingFile?.originalFilename}" title="${message(code: 'page.label.mappingFile.detail')}"/>
                 </div>
             </fieldset>
 
             <div class="form-submit">
                 <g:actionSubmit action="collectMeasurementTerms" value="${message(code: 'page.label.collect')}"/>
             </div>
-        </g:form>
+        </g:uploadForm>
     </div>
 
     <div id="resources">

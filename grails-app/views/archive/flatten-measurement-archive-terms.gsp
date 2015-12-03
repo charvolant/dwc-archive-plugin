@@ -14,7 +14,7 @@
     <div id="headingBar" class="recordHeader heading-bar">
         <h1><g:message code="page.measurement-terms.title"/></h1>
 
-        <h2><g:message code="page.measurement.source" args="${configuration.source}"/></h2>
+        <h2><g:message code="page.measurement.source" args="${[configuration.rootFileName]}"/></h2>
     </div>
     <g:if test="${configuration.terms.isEmpty()}">
         <div class="measurement-terms.missing">
@@ -28,6 +28,12 @@
             <g:form>
                 <fieldset>
                     <g:hiddenField name="source" value="${configuration.source}"/>
+                    <g:hiddenField name="rootFileName" value="${configuration.rootFileName}"/>
+                    <p><g:message code="page.label.format"/>
+                    <g:radioGroup name="format" values="${configuration.VALID_FORMATS}" labels="${configuration.VALID_FORMATS}" value="${configuration.format}">
+                        <span title="${message(code: 'page.label.format.' + it.label + '.detail')}">${it.radio} <g:message code="${'page.label.format.' + it.label}"/></span>
+                    </g:radioGroup>
+                    </p>
                     <table class="table table-bordered table-striped table-condensed">
                         <tr>
                             <th><g:message code="page.label.measurementType"/></th>
@@ -52,6 +58,8 @@
                 <div class="form-submit">
                     <g:actionSubmit action="flattenMeasurementArchiveTerms"
                                     value="${message(code: 'page.label.flatten')}"/>
+                    <g:actionSubmit action="saveMeasurementArchiveTerms"
+                                    value="${message(code: 'page.label.save')}"/>
                 </div>
             </g:form>
         </div>

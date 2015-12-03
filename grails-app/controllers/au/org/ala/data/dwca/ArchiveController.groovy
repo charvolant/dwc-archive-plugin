@@ -3,6 +3,7 @@ package au.org.ala.data.dwca
 import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import grails.converters.JSON
 import grails.converters.XML
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 class ArchiveController {
     def imageArchiveService
@@ -32,7 +33,7 @@ class ArchiveController {
     def checkArchive() {
         def configuration = new CheckConfiguration()
         bindData(configuration, params)
-        if (configuration.hasErrors()) {
+        if (!configuration.validate()) {
             flash.message = messageSource.getMessage("page.configuration.error", null, "Invalid parameters", null)
             withFormat {
                 json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json")}
@@ -60,7 +61,7 @@ class ArchiveController {
     def collectMeasurementTerms() {
         def configuration = new MeasurementConfiguration()
         bindData(configuration, params)
-        if (configuration.hasErrors()) {
+        if (!configuration.validate()) {
             flash.message = messageSource.getMessage("page.configuration.error", null, "Invalid parameters", null)
             withFormat {
                 json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
@@ -68,7 +69,7 @@ class ArchiveController {
                 '*' { render(status: 400, view: 'flatten-measurement-archive', model: [configuration: configuration]) }
             }
         } else {
-            configuration.terms = measurementArchiveService.collectTerms(configuration.source)
+            configuration = measurementArchiveService.collectTerms(configuration)
             def model = [configuration: configuration]
             withFormat {
                 json { render model as JSON }
@@ -81,7 +82,7 @@ class ArchiveController {
     def flattenMeasurementArchiveTerms() {
         def configuration = new MeasurementConfiguration()
         bindData(configuration, params)
-        if (configuration.hasErrors()) {
+        if (!configuration.validate()) {
             flash.message = messageSource.getMessage("page.configuration.error", null, "Invalid parameters", null)
             withFormat {
                 json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
@@ -94,6 +95,31 @@ class ArchiveController {
             log.warn "Archive content is: ${archive}"
             render(archive)
             archive.file.delete()
+        }
+    }
+
+    def saveMeasurementArchiveTerms() {
+        def configuration = new MeasurementConfiguration()
+        bindData(configuration, params)
+        if (!configuration.validate()) {
+            flash.message = messageSource.getMessage("page.configuration.error", null, "Invalid parameters", null)
+            withFormat {
+                json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
+                xml { render(status: 400, text: (configuration.errors as XML), contentType: "text/xml") }
+                '*' { render(status: 400, view: 'flatten-measurement-archive-terms', model: [configuration: configuration]) }
+            }
+        } else {
+            def terms = configuration.terms.collect { term ->
+                [ term: term.simpleName(),
+                  uri: term.qualifiedName(),
+                  measurementType: term.measurementType,
+                  measurementUnit: term.measurementUnit
+                ]
+            }
+            def model = [terms: terms ]
+            def filename = configuration.rootFileName + ".json"
+            response.setHeader("Content-disposition", "attachment; filename=" + filename)
+            render model as JSON
         }
     }
 }

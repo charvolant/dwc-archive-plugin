@@ -1,5 +1,7 @@
 package au.org.ala.util
 
+import org.apache.commons.logging.Log
+
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -109,6 +111,38 @@ class ResourceExtractor {
                 removeDir(entry)
         }
         dir.delete()
+    }
+
+    /**
+     * Clean the contents of a directory.
+     * <p>
+     * Any files that have not been accessed after a certain time
+     * are deleted.
+     *
+     * @param dir The directory/file to clean
+     * @param before The expiry date for the file
+     * @param thisDir Remove this directory if no longer relevant
+     * @param log Log deletions to this log if not null
+     *
+     * @return True if the directory/file has been deleted
+     */
+    boolean cleanDir(File dir, Date before, boolean thisDir, Log log = null) {
+        if (dir.isDirectory()) {
+            def deleted = thisDir
+            for (File entry: dir.listFiles())
+                deleted = cleanDir(entry, before, true, log) && deleted
+            if (deleted) {
+                deleted = dir.delete()
+                if (log) log.debug "Removed empty directory ${dir}"
+            }
+            return deleted
+        } else {
+            if (dir.lastModified() < before.time) {
+                if (log) log.debug "Expired ${dir}"
+                return dir.delete()
+            } else
+                return false
+        }
     }
 
     /**

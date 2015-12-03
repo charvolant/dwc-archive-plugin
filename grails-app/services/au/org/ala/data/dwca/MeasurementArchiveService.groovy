@@ -2,8 +2,8 @@ package au.org.ala.data.dwca
 
 import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import au.org.ala.data.dwca.measurement.TermMaker
-import au.org.ala.util.DwCAGenerator
 import au.org.ala.util.CSVGenerator
+import au.org.ala.util.DwCAGenerator
 import org.gbif.api.model.registry.Comment
 import org.gbif.dwc.record.Record
 import org.gbif.dwc.record.StarRecord
@@ -11,7 +11,6 @@ import org.gbif.dwc.terms.DwcTerm
 import org.gbif.dwc.terms.Term
 import org.gbif.dwc.text.Archive
 import org.gbif.dwc.text.ArchiveFactory
-import org.gbif.dwc.text.DwcaWriter
 
 /**
  * A service that allows the deconstruction of an archive with a MeasurementOrFact
@@ -26,12 +25,47 @@ class MeasurementArchiveService {
     def messageSource
 
     /**
-     * Pull apart a DwCA and collect
-     * @param source
-     * @return
+     * Pull apart a DwCA and collect the terms
+     *
+     * @param configuration The configuration
+     *
+     * @return A new configuration with the terms
      */
-    List<Term> collectTerms(URL source) {
-        (List<Term>) archiveService.withDwCA(source, this.&performCollectTerms)
+    MeasurementConfiguration collectTerms(MeasurementConfiguration configuration) {
+        File workFile = null
+
+        try {
+            if (configuration.sourceFile && configuration.sourceFile.size > 0 && !configuration.source) {
+                def workDir = new File(grailsApplication.config.workDir)
+                workFile = File.createTempFile("work", ".zip", workDir)
+                configuration.sourceFile.transferTo(workFile)
+                configuration.source = workFile.toURI().toURL()
+            }
+            return (MeasurementConfiguration) archiveService.withDwCA(configuration.source, this.&performCollectTerms.curry(configuration))
+        } finally {
+        }
+    }
+
+    private MeasurementConfiguration performCollectTerms(MeasurementConfiguration configuration, File dir) {
+        Archive archive = ArchiveFactory.openArchive(dir)
+        Map<String, Term> terms
+        TermMaker maker = new TermMaker()
+
+        configuration = configuration.clone()
+        configuration.addMappingFile()
+        terms = configuration.termMap
+        archive.getExtension(DwcTerm.MeasurementOrFact).iterator().each { Record record ->
+            String type = record.value(DwcTerm.measurementType)
+            String unit = record.value(DwcTerm.measurementUnit)
+
+            if (!terms.containsKey(type)) {
+                Term term = maker.convertTypeToTerm(type, unit)
+                terms[type] = term
+                configuration.hasNewTerms = true
+            }
+        }
+        configuration.terms = terms.values() as List
+        return configuration
     }
 
     /**
@@ -48,6 +82,7 @@ class MeasurementArchiveService {
 
     def performPivot(MeasurementConfiguration configuration, File dir) {
         Archive archive = ArchiveFactory.openArchive(dir)
+        def generator
         def workDir = new File(grailsApplication.config.workDir)
         def termMap = configuration.termMap
         def coreTerms = archive.core.fieldsSorted.collect { field -> field.term }
@@ -56,32 +91,33 @@ class MeasurementArchiveService {
 
         measurementTerms = measurementTerms.unique { term -> term.qualifiedName() }
         measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
-        /*
-        def generator = new DwCAGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
-            String value = null
-            if (coreTerms.contains(term))
-                value = record.core().value(term)
-            else {
-                def measurements = record.extension(DwcTerm.MeasurementOrFact)
-                def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
+        if (configuration.format == 'dwca') {
+            generator = new DwCAGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
+                String value = null
+                if (coreTerms.contains(term))
+                    value = record.core().value(term)
+                else {
+                    def measurements = record.extension(DwcTerm.MeasurementOrFact)
+                    def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
 
-                value = measurement?.value(DwcTerm.measurementValue)
-            }
-            value
-        }, archive.core.rowType, idTerm)
-        */
-        def generator = new CSVGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
-            String value = null
-            if (coreTerms.contains(term))
-                value = record.core().value(term)
-            else {
-                def measurements = record.extension(DwcTerm.MeasurementOrFact)
-                def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
+                    value = measurement?.value(DwcTerm.measurementValue)
+                }
+                value
+            }, archive.core.rowType, idTerm)
+        } else {
+            generator = new CSVGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
+                String value = null
+                if (coreTerms.contains(term))
+                    value = record.core().value(term)
+                else {
+                    def measurements = record.extension(DwcTerm.MeasurementOrFact)
+                    def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
 
-                value = measurement?.value(DwcTerm.measurementValue)
-            }
-            value
-        })
+                    value = measurement?.value(DwcTerm.measurementValue)
+                }
+                value
+            })
+        }
         if (archive.metadataLocation) {
             // Copy metadata and add processing comment
             def eml = archive.getMetadata()
@@ -95,24 +131,4 @@ class MeasurementArchiveService {
         def file = generator.generate(archive.iterator())
         return [contentType: generator.mimeType, file: file]
     }
-
-    private List<Term> performCollectTerms(File dir) {
-        Archive archive = ArchiveFactory.openArchive(dir)
-        Map<String, Term> terms = [:]
-        TermMaker maker = new TermMaker()
-
-        archive.getExtension(DwcTerm.MeasurementOrFact).iterator().each { Record record ->
-            String type = record.value(DwcTerm.measurementType)
-            String unit = record.value(DwcTerm.measurementUnit)
-
-            if (!terms.containsKey(type)) {
-                Term term = maker.convertTypeToTerm(type, unit)
-                terms[type] = term
-            }
-        }
-        def termList = terms.values() as List<Term>
-        return termList.sort {t1, t2 -> t1.simpleName().compareTo(t2.simpleName()) }
-    }
-
-
 }

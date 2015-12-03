@@ -26,6 +26,7 @@ class CheckConfiguration {
 
 
     static constraints = {
+        source nullable: false
     }
 
     String getUniqueTermList() {

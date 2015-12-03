@@ -1,5 +1,6 @@
 package au.org.ala.data.dwca
 
+import au.org.ala.util.ResourceExtractor
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.services.ServiceUnitTestMixin
@@ -12,13 +13,19 @@ import spock.lang.Specification
 @TestMixin(ServiceUnitTestMixin)
 class ArchiveServiceSpec extends Specification {
     ArchiveService archiveService
+    File work
     def setup() {
-        grailsApplication.config.workDir = System.getProperty("user.dir")
+        work = File.createTempFile("test", "")
+        work.delete()
+        work.mkdirs()
+        grailsApplication.config.workDir = work.getCanonicalPath()
         archiveService = new ArchiveService()
         archiveService.grailsApplication = grailsApplication
     }
 
     def cleanup() {
+        def re = new ResourceExtractor()
+        re.removeDir(work)
     }
 
     void "test with dwca 1"() {
@@ -50,5 +57,24 @@ class ArchiveServiceSpec extends Specification {
         def message = archiveService.withDwCA(new URL('file:///nothing')) { location -> "Created archive!" } { ex -> "Invalid archive: ${ex.message}" }
         then:
         message == "Invalid archive: /nothing (No such file or directory)"
+    }
+
+    void "test clean up 1"() {
+        when:
+        def file = File.createTempFile("test", ".txt", work)
+        grailsApplication.config.temporaryFileLifetime = 10000L
+        archiveService.cleanup()
+        then:
+        file.exists() == true
+    }
+
+    void "test clean up 2"() {
+        when:
+        def file = File.createTempFile("test", ".txt", work)
+        Thread.sleep(20L)
+        grailsApplication.config.temporaryFileLifetime = 10L
+        archiveService.cleanup()
+        then:
+        file.exists() == false
     }
 }

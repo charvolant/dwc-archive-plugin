@@ -1,5 +1,6 @@
 package au.org.ala.data.dwca
 
+import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import au.org.ala.util.AlaTerm
 import grails.test.mixin.TestFor
 import org.gbif.dwc.terms.DwcTerm
@@ -94,15 +95,16 @@ class ArchiveControllerSpec extends Specification {
         response.contentType.startsWith('text/html')
         view == '/archive/flatten-measurement-archive'
         model.containsKey('configuration')
-        model.configuration.source.toString() == 'http://host/path/archive.zip'
+        model.configuration.format == "csv"
         model.configuration.terms == []
     }
 
     void "test collect measurement terms 1"() {
         when:
-        def terms = [ new AlaTerm(term: 'fred') ]
+        def config = new MeasurementConfiguration()
+        config.terms = [ new AlaTerm(term: 'fred') ]
         controller.measurementArchiveService = Mock(MeasurementArchiveService)
-        controller.measurementArchiveService.collectTerms(_) >> terms
+        controller.measurementArchiveService.collectTerms(_) >> config
         params.source = 'http://localhost/somewhere/archive.zip'
         controller.collectMeasurementTerms()
         then:
@@ -110,8 +112,7 @@ class ArchiveControllerSpec extends Specification {
         response.contentType.startsWith('text/html')
         view == '/archive/flatten-measurement-archive-terms'
         model.containsKey('configuration')
-        model.configuration.source.toString() == 'http://localhost/somewhere/archive.zip'
-        model.configuration.terms == terms
+        model.configuration.terms == config.terms
     }
 
     void "test collect measurement terms 2"() {
@@ -142,6 +143,23 @@ class ArchiveControllerSpec extends Specification {
 
     void "test flatten measurement archive terms 2"() {
         when:
+        params.source = 'http://localhost/somewhere/archive.zip'
+        params.format = 'dwca'
+        params['terms[0].term'] = 'fred'
+        params['terms[0].measurementType'] = 'jim'
+        def file = File.createTempFile("test", ".csv")
+        controller.measurementArchiveService = Mock(MeasurementArchiveService)
+        controller.measurementArchiveService.pivot(_) >> [ contentType: 'application/zip', file: file ]
+        controller.flattenMeasurementArchiveTerms()
+        then:
+        response.status == 200
+        response.contentType.startsWith('application/zip')
+        response.contentLength == 0
+        !file.exists()
+    }
+
+    void "test flatten measurement archive terms 3"() {
+        when:
         params.source = ':: completely invalid'
         controller.flattenMeasurementArchiveTerms()
         then:
@@ -149,5 +167,16 @@ class ArchiveControllerSpec extends Specification {
         response.contentType.startsWith('text/html')
         view == '/archive/flatten-measurement-archive-terms'
     }
+
+    void "test flatten measurement archive terms 4"() {
+        when:
+        params.format = 'xxx'
+        controller.flattenMeasurementArchiveTerms()
+        then:
+        response.status == 400
+        response.contentType.startsWith('text/html')
+        view == '/archive/flatten-measurement-archive-terms'
+    }
+
 
 }

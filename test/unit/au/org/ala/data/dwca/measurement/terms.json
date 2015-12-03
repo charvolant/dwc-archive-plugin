@@ -1,0 +1,30 @@
+{
+
+  * "terms": [
+      o {
+          + "term": "turbidityInNtus",
+          + "uri": "http://vocabulary.ala.org.au/turbidityInNtus",
+          + "measurementType": "Turbidity (NTUs)",
+          + "measurementUnit": null
+        },
+      o {
+          + "term": "dissolvedOxygenInMilligramPerLitre",
+          + "uri": "http://vocabulary.ala.org.au/dissolvedOxygenInMilligramPerLitre",
+          + "measurementType": "Dissolved Oxygen (mg/L)",
+          + "measurementUnit": null
+        },
+      o {
+          + "term": "samplerGroupName",
+          + "uri": "http://vocabulary.ala.org.au/samplerGroupName",
+          + "measurementType": "Sampler group name *",
+          + "measurementUnit": null
+        },
+      o {
+          + "term": "didYouCalibrateYourEcMeter",
+          + "uri": "http://vocabulary.ala.org.au/didYouCalibrateYourEcMeter",
+          + "measurementType": "Did you calibrate your EC meter?",
+          + "measurementUnit": null
+        }
+    ]
+
+}

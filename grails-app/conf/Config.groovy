@@ -21,6 +21,8 @@ println "default_config = ${default_config}"
 // Defalt settings
 if (!workDir)
        workDir = "/data/${appName}/work"
+if (!temporaryFileLifetime)
+    temporaryFileLifetime = 24 * 3600 * 1000L
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = true
@@ -60,5 +62,7 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-    debug 'au.org.ala.data.dwca'
+    debug 'au.org.ala.data.dwca',
+            'grails.app.services.au.org.ala.data.dwca'
+
 }

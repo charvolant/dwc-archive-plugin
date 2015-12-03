@@ -29,7 +29,9 @@ class MeasurementArchiveServiceSpec extends Specification {
 
     void "test collect terms 1"() {
         when:
-        def terms = service.collectTerms(this.class.getResource("bdrs1.zip"))
+        def config = new MeasurementConfiguration(source: this.class.getResource("bdrs1.zip"))
+        def result = service.collectTerms(config)
+        def terms = result.terms
         then:
         terms.size() == 1
         terms[0].simpleName() == "availablePhosphateInMilligramPerLitre"
@@ -37,7 +39,9 @@ class MeasurementArchiveServiceSpec extends Specification {
 
     void "test collect terms 2"() {
         when:
-        def terms = service.collectTerms(this.class.getResource("bdrs2.zip"))
+        def config = new MeasurementConfiguration(source: this.class.getResource("bdrs2.zip"))
+        def result = service.collectTerms(config)
+        def terms = result.sortedTerms
         then:
         terms.size() == 4
         terms[0].simpleName() == "didYouCalibrateYourEcMeter"
@@ -59,6 +63,21 @@ class MeasurementArchiveServiceSpec extends Specification {
         then:
         response.file.exists()
         response.contentType == "text/csv"
+    }
+
+    void "test pivot 2"() {
+        when:
+        def config = new MeasurementConfiguration(
+                source: this.class.getResource("bdrs1.zip"),
+                format: 'dwca',
+                terms: [
+                        new AlaTerm(term: 'availablePhosphateInMilligramPerLitre', measurementType: 'Available Phosphate (mg/L)')
+                ]
+        )
+        response = service.pivot(config)
+        then:
+        response.file.exists()
+        response.contentType == "application/zip"
     }
 
 }

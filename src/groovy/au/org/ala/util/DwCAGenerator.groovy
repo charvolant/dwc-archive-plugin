@@ -1,5 +1,6 @@
 package au.org.ala.util
 
+import grails.util.Mixin
 import org.apache.commons.logging.LogFactory
 import org.gbif.api.model.registry.Dataset
 import org.gbif.dwc.terms.DcTerm
