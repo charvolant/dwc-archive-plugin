@@ -92,7 +92,7 @@ class MeasurementArchiveService {
         measurementTerms = measurementTerms.unique { term -> term.qualifiedName() }
         measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
         if (configuration.format == 'dwca') {
-            generator = new DwCAGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
+            generator = new DwCAGenerator<StarRecord>(coreTerms + measurementTerms, workDir, configuration.filter, { StarRecord record, Term term ->
                 String value = null
                 if (coreTerms.contains(term))
                     value = record.core().value(term)
@@ -105,7 +105,7 @@ class MeasurementArchiveService {
                 value
             }, archive.core.rowType, idTerm)
         } else {
-            generator = new CSVGenerator<StarRecord>(coreTerms + measurementTerms, workDir, { StarRecord record, Term term ->
+            generator = new CSVGenerator<StarRecord>(coreTerms + measurementTerms, workDir, configuration.filter, { StarRecord record, Term term ->
                 String value = null
                 if (coreTerms.contains(term))
                     value = record.core().value(term)

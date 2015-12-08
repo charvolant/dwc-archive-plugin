@@ -34,6 +34,9 @@
                         <span title="${message(code: 'page.label.format.' + it.label + '.detail')}">${it.radio} <g:message code="${'page.label.format.' + it.label}"/></span>
                     </g:radioGroup>
                     </p>
+                    <p><g:message code="page.label.filter"/>
+                        <g:field type="textField" class="dwca-filter" name="filter" value="${configuration.filter?.asExpression()}" title="${message(code: 'page.label.filter.detail')}"/>
+                    </p>
                     <table class="table table-bordered table-striped table-condensed">
                         <tr>
                             <th><g:message code="page.label.measurementType"/></th>

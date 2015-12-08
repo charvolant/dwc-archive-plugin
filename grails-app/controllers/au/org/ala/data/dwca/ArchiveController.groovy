@@ -92,7 +92,7 @@ class ArchiveController {
         } else {
             def archive = measurementArchiveService.pivot(configuration)
 
-            log.warn "Archive content is: ${archive}"
+            log.debug "Archive content is: ${archive}"
             render(archive)
             archive.file.delete()
         }
@@ -117,6 +117,8 @@ class ArchiveController {
                 ]
             }
             def model = [terms: terms ]
+            if (configuration.filter)
+                model['filter'] = configuration.filter.asExpression()
             def filename = configuration.rootFileName + ".json"
             response.setHeader("Content-disposition", "attachment; filename=" + filename)
             render model as JSON

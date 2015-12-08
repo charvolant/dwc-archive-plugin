@@ -1,10 +1,13 @@
 package au.org.ala.data.dwca.measurement
 
+import au.org.ala.data.filter.Filter
+import au.org.ala.data.filter.FilterParser
 import au.org.ala.util.AlaTerm
 import grails.validation.Validateable
 import groovy.json.JsonSlurper
 import org.apache.commons.io.FilenameUtils
 import org.gbif.dwc.terms.Term
+import org.grails.databinding.BindUsing
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 /**
@@ -23,6 +26,12 @@ class MeasurementConfiguration implements Cloneable {
     CommonsMultipartFile sourceFile
     /** The mapping description file name */
     CommonsMultipartFile mappingFile
+    /** The filter expression to use */
+    @BindUsing({ obj, source ->
+        def filter = source['filter']
+        filter != null && !filter.isEmpty() ? new FilterParser(filter).parse() : null
+    })
+    Filter filter
     /** The root file name for names */
     String rootFileName
     /** The archive format */
@@ -56,6 +65,8 @@ class MeasurementConfiguration implements Cloneable {
                 terms.add(term)
             }
         }
+        if (filter == null && mapping.filter != null)
+            filter = new FilterParser(mapping.filter).parse()
     }
 
     /**

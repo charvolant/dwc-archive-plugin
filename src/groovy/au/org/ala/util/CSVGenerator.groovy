@@ -1,6 +1,7 @@
 package au.org.ala.util
 
 import au.com.bytecode.opencsv.CSVWriter
+import au.org.ala.data.filter.Filter
 import org.gbif.dwc.terms.Term
 
 /**
@@ -14,8 +15,8 @@ class CSVGenerator<R> extends DwCGenerator<R> {
     File csv
     CSVWriter writer
 
-    def CSVGenerator(List<Term> terms, File working, Closure<String> getter) {
-        super(terms, working, getter)
+    def CSVGenerator(List<Term> terms, File working, Filter filter, Closure<String> getter) {
+        super(terms, working, filter, getter)
     }
 
     @Override

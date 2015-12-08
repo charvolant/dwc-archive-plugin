@@ -1,5 +1,6 @@
 package au.org.ala.util
 
+import au.org.ala.data.filter.Filter
 import grails.util.Mixin
 import org.apache.commons.logging.LogFactory
 import org.gbif.api.model.registry.Dataset
@@ -42,8 +43,8 @@ class DwCAGenerator<R> extends DwCGenerator<R> {
      * @param rowType An optional row Type (defaults to {@link DwcTerm#Occurrence}
      * @param rowid An optional term that uniquely identifies the row (defaults to the default rowid for the rowType)
      */
-    def DwCAGenerator(List terms, File working, Closure getter, Term rowType = DwcTerm.Occurrence, Term rowid = null) {
-        super(terms, working, getter)
+    def DwCAGenerator(List terms, File working, Filter filter, Closure getter, Term rowType = DwcTerm.Occurrence, Term rowid = null) {
+        super(terms, working, filter, getter)
         this.rowType = rowType
         this.rowid = rowid
     }

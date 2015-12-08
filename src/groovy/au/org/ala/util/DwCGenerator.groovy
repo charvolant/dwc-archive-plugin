@@ -1,5 +1,6 @@
 package au.org.ala.util
 
+import au.org.ala.data.filter.Filter
 import org.gbif.api.model.registry.Dataset
 import org.gbif.dwc.terms.Term
 
@@ -44,6 +45,8 @@ import org.gbif.dwc.terms.Term
 abstract class DwCGenerator<R> {
     /** The terms that make up the columns. The list order is also the column order */
     List<Term> terms
+    /** The record filter */
+    Filter filter
     /** The work directory */
     File working
     /** The mechanism for getting a term value. */
@@ -54,11 +57,13 @@ abstract class DwCGenerator<R> {
      *
      * @param terms The term list
      * @param working The working directory for creating files
+     * @param filter The filter to apply to the records (null for no filtering)
      * @param getter The value getter
      */
-    def DwCGenerator(List<Term> terms, File working, Closure<String> getter) {
+    def DwCGenerator(List<Term> terms, File working, Filter filter, Closure<String> getter) {
         this.terms = terms
         this.working = working
+        this.filter = filter
         this.getter = getter
     }
 
@@ -115,8 +120,10 @@ abstract class DwCGenerator<R> {
      */
     void write(Iterator<R> source) {
         source.each { record ->
-            List<String> values = terms.collect { term -> getter.call(record, term) }
-            writeRow(values)
+            if (!filter || filter.filter(record)) {
+                List<String> values = terms.collect { term -> getter.call(record, term) }
+                writeRow(values)
+            }
         }
     }
 

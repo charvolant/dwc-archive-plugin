@@ -5,6 +5,7 @@ import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.FileItemHeaders
+import org.grails.databinding.SimpleMapDataBindingSource
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import spock.lang.Specification
 
@@ -75,5 +76,16 @@ class MeasurementConfigurationSpec extends Specification {
         !valid
     }
 
+    void "test bind filter 1"() {
+        when:
+        def dataBinder = applicationContext.getBean('grailsWebDataBinder')
+        def config = new MeasurementConfiguration(source: new URL("http://localhost"))
+        SimpleMapDataBindingSource source = [filter: 'basisOfRecord == "Observation"']
+        dataBinder.bind(config, source)
+        then:
+        config.filter != null
+        config.filter.asExpression() == 'basisOfRecord == "Observation"'
+
+    }
 
 }

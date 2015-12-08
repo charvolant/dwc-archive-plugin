@@ -79,5 +79,4 @@ class MeasurementArchiveServiceSpec extends Specification {
         response.file.exists()
         response.contentType == "application/zip"
     }
-
 }
