@@ -38,8 +38,10 @@ class MeasurementConfiguration implements Cloneable {
     String format = 'csv'
     /** The list of terms */
     List<AlaTerm> terms = []
+    /** Does the configuration allow new terms to be created on the fly? */
+    boolean allowNewTerms = true
     /** The configuration contains some additional new terms */
-    boolean hasNewTerms
+    boolean hasNewTerms = false
 
 
     static constraints = {

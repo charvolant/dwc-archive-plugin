@@ -178,5 +178,22 @@ class ArchiveControllerSpec extends Specification {
         view == '/archive/flatten-measurement-archive-terms'
     }
 
-
+    void "test flatten measurement archive complete 1"() {
+        when:
+        params.source = 'http://localhost/somewhere/archive.zip'
+        def file = File.createTempFile("test", ".csv")
+        controller.measurementArchiveService = Mock(MeasurementArchiveService)
+        controller.measurementArchiveService.collectTerms(_) >> { MeasurementConfiguration config ->
+            config = config.clone()
+            config.terms << new AlaTerm(term: 'bonzo')
+            config
+        }
+        controller.measurementArchiveService.pivot(_) >> [ contentType: 'text/csv', file: file ]
+        controller.flattenMeasurementArchiveComplete()
+        then:
+        response.status == 200
+        response.contentType.startsWith('text/csv')
+        response.contentLength == 0
+        !file.exists()
+    }
 }

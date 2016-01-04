@@ -36,7 +36,7 @@ class ArchiveController {
         if (!configuration.validate()) {
             flash.message = messageSource.getMessage("page.configuration.error", null, "Invalid parameters", null)
             withFormat {
-                json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json")}
+                json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
                 xml { render(status: 400, text: (configuration.errors as XML), contentType: "text/xml") }
                 '*' { render(status: 400, view: 'validate-archive', model: [configuration: configuration]) }
             }
@@ -87,7 +87,9 @@ class ArchiveController {
             withFormat {
                 json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
                 xml { render(status: 400, text: (configuration.errors as XML), contentType: "text/xml") }
-                '*' { render(status: 400, view: 'flatten-measurement-archive-terms', model: [configuration: configuration]) }
+                '*' {
+                    render(status: 400, view: 'flatten-measurement-archive-terms', model: [configuration: configuration])
+                }
             }
         } else {
             def archive = measurementArchiveService.pivot(configuration)
@@ -106,22 +108,47 @@ class ArchiveController {
             withFormat {
                 json { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
                 xml { render(status: 400, text: (configuration.errors as XML), contentType: "text/xml") }
-                '*' { render(status: 400, view: 'flatten-measurement-archive-terms', model: [configuration: configuration]) }
+                '*' {
+                    render(status: 400, view: 'flatten-measurement-archive-terms', model: [configuration: configuration])
+                }
             }
         } else {
             def terms = configuration.terms.collect { term ->
-                [ term: term.simpleName(),
-                  uri: term.qualifiedName(),
-                  measurementType: term.measurementType,
-                  measurementUnit: term.measurementUnit
+                [term: term.simpleName(),
+                 uri: term.qualifiedName(),
+                 measurementType: term.measurementType,
+                 measurementUnit: term.measurementUnit
                 ]
             }
-            def model = [terms: terms ]
+            def model = [terms: terms]
             if (configuration.filter)
                 model['filter'] = configuration.filter.asExpression()
             def filename = configuration.rootFileName + ".json"
             response.setHeader("Content-disposition", "attachment; filename=" + filename)
             render model as JSON
         }
+    }
+
+    def flattenMeasurementArchiveComplete() {
+        def configuration = new MeasurementConfiguration()
+        bindData(configuration, params)
+        if (!configuration.validate()) {
+            withFormat {
+                xml { render(status: 400, text: (configuration.errors as XML), contentType: "text/xml") }
+                '*' { render(status: 400, text: (configuration.errors as JSON), contentType: "application/json") }
+            }
+        } else {
+            configuration = measurementArchiveService.collectTerms(configuration)
+            if (configuration.hasNewTerms && !configuration.allowNewTerms) {
+                render(status: 400, text: "Unexpected terms were detected", contentType: "text/plain")
+
+            } else {
+                def archive = measurementArchiveService.pivot(configuration)
+                log.debug "Archive content is: ${archive}"
+                render(archive)
+                archive.file.delete()
+            }
+        }
+
     }
 }

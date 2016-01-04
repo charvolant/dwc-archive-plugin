@@ -35,7 +35,7 @@ class DwCAGeneratorSpec extends Specification {
 
     def "test generate dwca 1"() {
         when:
-        def g = new DwCAGenerator<Map<Term, String>>(terms, working, { record, term -> record[term] })
+        def g = new DwCAGenerator<Map<Term, String>>(terms, working, null, { record, term -> record[term] })
         dwca = g.generate(values)
         then:
         dwca.exists()
@@ -58,7 +58,7 @@ class DwCAGeneratorSpec extends Specification {
 
     def "test generate dwca 2"() {
         when:
-        def g = new DwCAGenerator<Map<Term, String>>(terms, working, { record, term -> record[term] }, DwcTerm.Occurrence, DwcTerm.catalogNumber)
+        def g = new DwCAGenerator<Map<Term, String>>(terms, working, null, { record, term -> record[term] }, DwcTerm.Occurrence, DwcTerm.catalogNumber)
         dwca = g.generate(values)
         then:
         dwca.exists()
@@ -80,7 +80,7 @@ class DwCAGeneratorSpec extends Specification {
 
     def "test generate dwca 3"() {
         when:
-        def g = new DwCAGenerator<Map<Term, String>>(terms, working, { record, term -> record[term] })
+        def g = new DwCAGenerator<Map<Term, String>>(terms, working, null, { record, term -> record[term] })
         g.begin()
         g.write(values.iterator())
         g.write(values.iterator())
