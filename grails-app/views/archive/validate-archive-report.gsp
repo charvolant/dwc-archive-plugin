@@ -12,7 +12,7 @@
     </g:if>
     <div id="headingBar" class="recordHeader heading-bar">
         <h1><g:message code="page.validate-archive-report.title"/></h1>
-        <h2><g:message code="page.validate-archive-report.source" args="${configuration.source}"/></h2>
+        <h2><g:message code="page.validate-archive-report.source" args="${[configuration.sourceName]}"/></h2>
     </div>
     <div id="report-confguration">
         <h3><g:message code="page.label.checks"/></h3>

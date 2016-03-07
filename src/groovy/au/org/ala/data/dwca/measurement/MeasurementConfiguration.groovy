@@ -97,8 +97,9 @@ class MeasurementConfiguration implements Cloneable {
     }
 
     /**
-     * Get the root of a filename for which
-     * @return
+     * Get the root of a filename which can be used to supply suggested file names.
+     *
+     * @return The root file name
      */
     String getRootFileName() {
         if (!rootFileName) {

@@ -35,7 +35,8 @@ class ArchiveControllerSpec extends Specification {
         response.contentType.startsWith('text/html')
         view == '/archive/validate-archive'
         model.containsKey('configuration')
-        model.configuration.source.toString() == 'http://host/path/archive.zip'
+        model.configuration.source == null
+        model.configuration.sourceFile == null
         model.configuration.checkUniqueTerms == true
         model.configuration.uniqueTerms == [DwcTerm.catalogNumber ]
     }
@@ -62,6 +63,7 @@ class ArchiveControllerSpec extends Specification {
         controller.imageArchiveService = Mock(ImageArchiveService)
         controller.imageArchiveService.check(_) >> new Report()
         controller.response.format = 'json' // Documented request.contentType = JSON_CONTENT_TYPE doesn't work
+        params.source = 'http://host/path/archive.zip'
         controller.checkArchive()
         then:
         response.status == 200

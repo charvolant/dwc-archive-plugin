@@ -22,12 +22,15 @@
                 <g:renderErrors bean="${configuration}" as="list" />
             </div>
         </g:hasErrors>
-        <g:form>
+        <g:uploadForm>
             <fieldset>
                 <div class="text-input">
                     <label for="check_source"><g:message code="page.label.source"/></label>
-                    <g:field type="url" id="check_source" name="source" class="form-control" required="true"
+                    <g:field type="url" id="check_source" name="source" class="form-control source-url"
                              value="${configuration?.source}" title="${message(code: 'page.label.source.detail')}"/>
+                    <label for="archive_file"><g:message code="page.label.sourceFile"/></label>
+                    <g:field type="file" id="archive_file" name="sourceFile" class="form-control"
+                             value="${configuration?.sourceFile?.originalFilename}" title="${message(code: 'page.label.sourceFile.detail')}"/>
                 </div>
 
                 <div class="checkbox-input">
@@ -69,7 +72,7 @@
             <div class="form-submit">
                 <g:actionSubmit action="checkArchive" value="${message(code: 'page.label.validate')}"/>
             </div>
-        </g:form>
+        </g:uploadForm>
     </div>
 
 </div>
