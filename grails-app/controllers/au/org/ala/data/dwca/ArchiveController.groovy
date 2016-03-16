@@ -3,7 +3,6 @@ package au.org.ala.data.dwca
 import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import grails.converters.JSON
 import grails.converters.XML
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 class ArchiveController {
     def imageArchiveService

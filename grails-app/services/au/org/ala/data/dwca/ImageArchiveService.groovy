@@ -1,8 +1,6 @@
 package au.org.ala.data.dwca
 
-import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import au.org.ala.util.ResourceExtractor
-import grails.transaction.Transactional
 import grails.util.Mixin
 
 @Mixin(ResourceExtractor)

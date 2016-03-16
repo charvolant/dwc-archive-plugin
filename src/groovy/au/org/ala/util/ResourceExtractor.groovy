@@ -128,7 +128,7 @@ class ResourceExtractor {
      */
     boolean cleanDir(File dir, Date before, boolean thisDir, Log log = null) {
         if (dir.isDirectory()) {
-            def deleted = thisDir
+            def deleted = thisDir && (dir.lastModified() < before.time)
             for (File entry: dir.listFiles())
                 deleted = cleanDir(entry, before, true, log) && deleted
             if (deleted) {
@@ -138,7 +138,7 @@ class ResourceExtractor {
             return deleted
         } else {
             if (dir.lastModified() < before.time) {
-                if (log) log.debug "Expired ${dir}"
+                if (log) log.debug "Expired ${dir} last modified ${new Date(dir.lastModified)}"
                 return dir.delete()
             } else
                 return false

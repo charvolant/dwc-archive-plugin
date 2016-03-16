@@ -5,6 +5,8 @@ package au.org.ala
  */
 class CleanupJob {
     def archiveService
+    def sessionRequired = false
+    def concurrent = false
 
     static triggers = {
       simple repeatInterval: (10 * 60 * 1000l) // execute job once in 10 minutes

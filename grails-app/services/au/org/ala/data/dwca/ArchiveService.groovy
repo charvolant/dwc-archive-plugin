@@ -1,12 +1,6 @@
 package au.org.ala.data.dwca
 
 import au.org.ala.util.ResourceExtractor
-import grails.transaction.Transactional
-import org.gbif.dwc.terms.Term
-import org.gbif.dwc.text.Archive
-import org.gbif.dwc.text.ArchiveFactory
-import org.gbif.dwc.text.DwcaWriter
-import org.springframework.scheduling.annotation.Scheduled
 
 /**
  * Generic Dawrin Core Archive services
