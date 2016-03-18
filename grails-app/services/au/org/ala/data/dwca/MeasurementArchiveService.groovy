@@ -87,14 +87,18 @@ class MeasurementArchiveService {
         def termMap = configuration.termMap
         def coreTerms = archive.core.fieldsSorted.collect { field -> field.term }
         def measurementTerms = termMap.keySet().collect { name -> termMap[name] }
+        def valueMap = configuration.valueMap
         def idTerm = archive.core.fieldsSorted[archive.core.id.index].term // You would expect archive.core.id.term to work, but noooo ...
-
+        def valueTerms = valueMap.keySet().findAll { term -> !measurementTerms.contains(term) && !coreTerms.contains(term) }
         measurementTerms = measurementTerms.unique { term -> term.qualifiedName() }
         measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
+        def allTerms = coreTerms + measurementTerms + valueTerms
         if (configuration.format == 'dwca') {
-            generator = new DwCAGenerator<StarRecord>(coreTerms + measurementTerms, workDir, configuration.filter, { StarRecord record, Term term ->
+            generator = new DwCAGenerator<StarRecord>(allTerms, workDir, configuration.filter, { StarRecord record, Term term ->
                 String value = null
-                if (coreTerms.contains(term))
+                if (valueMap.containsKey(term))
+                    value = valueMap[term]
+                else if (coreTerms.contains(term))
                     value = record.core().value(term)
                 else {
                     def measurements = record.extension(DwcTerm.MeasurementOrFact)
@@ -105,9 +109,11 @@ class MeasurementArchiveService {
                 value
             }, archive.core.rowType, idTerm)
         } else {
-            generator = new CSVGenerator<StarRecord>(coreTerms + measurementTerms, workDir, configuration.filter, { StarRecord record, Term term ->
+            generator = new CSVGenerator<StarRecord>(allTerms, workDir, configuration.filter, { StarRecord record, Term term ->
                 String value = null
-                if (coreTerms.contains(term))
+                if (valueMap.containsKey(term))
+                    value = valueMap[term]
+                else if (coreTerms.contains(term))
                     value = record.core().value(term)
                 else {
                     def measurements = record.extension(DwcTerm.MeasurementOrFact)

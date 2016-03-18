@@ -122,6 +122,8 @@ class ArchiveController {
             def model = [terms: terms]
             if (configuration.filter)
                 model['filter'] = configuration.filter.asExpression()
+            if (configuration.values)
+                model['values'] = configuration.values.inject([:], { map, val -> map[val.term.simpleName()] = val.value; map })
             def filename = configuration.rootFileName + ".json"
             response.setHeader("Content-disposition", "attachment; filename=" + filename)
             render model as JSON

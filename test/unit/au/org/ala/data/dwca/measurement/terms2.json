@@ -24,5 +24,6 @@
       "measurementType": "Did you calibrate your EC meter?",
       "measurementUnit": null
     }
-  ]
+  ],
+  "filter": "datasetName == \"Bat Survey\""
 }

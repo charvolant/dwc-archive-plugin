@@ -1,11 +1,14 @@
 package au.org.ala.data.dwca.measurement
 
+import au.org.ala.data.filter.ValueFilter
 import au.org.ala.util.AlaTerm
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
 import org.apache.commons.fileupload.FileItem
 import org.apache.commons.fileupload.FileItemHeaders
+import org.gbif.dwc.terms.DwcTerm
 import org.grails.databinding.SimpleMapDataBindingSource
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import spock.lang.Specification
 
@@ -86,6 +89,47 @@ class MeasurementConfigurationSpec extends Specification {
         config.filter != null
         config.filter.asExpression() == 'basisOfRecord == "Observation"'
 
+    }
+
+    void "test term file 1"() {
+        when:
+        def file = new MockMultipartFile("terms.json", this.class.getResourceAsStream("terms.json"))
+        def config = new MeasurementConfiguration(source: new URL("http://localhost"), mappingFile: file)
+        config.addMappingFile()
+        then:
+        config.terms.size() == 4
+        config.terms[0].term == 'turbidityInNtus'
+        config.filter == null
+    }
+
+    void "test term file 2"() {
+        when:
+        def file = new MockMultipartFile("terms2.json", this.class.getResourceAsStream("terms2.json"))
+        def config = new MeasurementConfiguration(source: new URL("http://localhost"), mappingFile: file)
+        config.addMappingFile()
+        then:
+        config.terms.size() == 4
+        config.terms[0].term == 'turbidityInNtus'
+        config.filter != null
+        config.filter.class == ValueFilter.class
+        config.filter.asExpression() == 'datasetName == "Bat Survey"'
+    }
+
+    void "test term file 3"() {
+        when:
+        def file = new MockMultipartFile("terms3.json", this.class.getResourceAsStream("terms3.json"))
+        def config = new MeasurementConfiguration(source: new URL("http://localhost"), mappingFile: file)
+        config.addMappingFile()
+        then:
+        config.terms.size() == 1
+        config.terms[0].term == 'turbidityInNtus'
+        config.values.size() == 2
+        def val1 = config.values.find { it.term == DwcTerm.datasetID }
+        val1 != null
+        val1.value == '123'
+        def val2 = config.values.find { it.term == DwcTerm.datasetName }
+        val2 != null
+        val2.value == 'Bat Survey'
     }
 
 }

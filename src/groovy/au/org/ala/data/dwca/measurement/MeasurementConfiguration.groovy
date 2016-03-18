@@ -2,13 +2,17 @@ package au.org.ala.data.dwca.measurement
 
 import au.org.ala.data.filter.Filter
 import au.org.ala.data.filter.FilterParser
+import au.org.ala.data.value.Value
+import au.org.ala.data.value.ValueParser
 import au.org.ala.util.AlaTerm
 import grails.validation.Validateable
 import groovy.json.JsonSlurper
+import org.apache.commons.collections.FactoryUtils
+import org.apache.commons.collections.list.LazyList
 import org.apache.commons.io.FilenameUtils
 import org.gbif.dwc.terms.Term
 import org.grails.databinding.BindUsing
-import org.springframework.web.multipart.commons.CommonsMultipartFile
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * @author Doug Palmer &lt;Doug.Palmer@csiro.au&gt;
@@ -23,9 +27,9 @@ class MeasurementConfiguration implements Cloneable {
     /** The source archive */
     URL source
     /** The source archive file name */
-    CommonsMultipartFile sourceFile
+    MultipartFile sourceFile
     /** The mapping description file name */
-    CommonsMultipartFile mappingFile
+    MultipartFile mappingFile
     /** The filter expression to use */
     @BindUsing({ obj, source ->
         def filter = source['filter']
@@ -38,6 +42,12 @@ class MeasurementConfiguration implements Cloneable {
     String format = 'csv'
     /** The list of terms */
     List<AlaTerm> terms = []
+    /** Additional terms with default values */
+    @BindUsing({ obj, source ->
+        def vals = source['values']
+        vals != null && !vals.isEmpty() ? new ValueParser(vals).parse() : null
+    })
+    List<Value> values
     /** Does the configuration allow new terms to be created on the fly? */
     boolean allowNewTerms = true
     /** The configuration contains some additional new terms */
@@ -67,6 +77,8 @@ class MeasurementConfiguration implements Cloneable {
                 terms.add(term)
             }
         }
+        if (values == null && mapping.values != null)
+            values = mapping.values.inject([], { vals, key, value -> vals.add(new Value(key, value)); vals })
         if (filter == null && mapping.filter != null)
             filter = new FilterParser(mapping.filter).parse()
     }
@@ -79,12 +91,24 @@ class MeasurementConfiguration implements Cloneable {
     Map<String, AlaTerm> getTermMap() {
         return terms.inject([:], { map, term -> map[term.measurementType] = term; map })
     }
+    /**
+     * Get a map of term entries to values
+     *
+     * @return The term -> value
+     */
+    Map<Term, String> getValueMap() {
+        return !values ? [:] : values.inject([:], { map, value -> map[value.term] = value.value; map })
+    }
 
     /**
      * Terms sorted into {@link Term#simpleName} order
      */
     List<AlaTerm> getSortedTerms() {
         return terms.sort {t1, t2 -> t1.simpleName().compareTo(t2.simpleName()) }
+    }
+
+    List<Value> getExpandableValues() {
+        return LazyList.decorate(values, FactoryUtils.instantiateFactory(Value))
     }
 
     /**

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="au.org.ala.data.value.ValueParser" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title><g:message code="page.measurement-terms.title"/></title>
@@ -36,6 +36,9 @@
                     </p>
                     <p><g:message code="page.label.filter"/>
                         <g:field type="textField" class="dwca-filter" name="filter" value="${configuration.filter?.asExpression()}" title="${message(code: 'page.label.filter.detail')}"/>
+                    </p>
+                    <p><g:message code="page.label.values"/>
+                        <g:field type="textField" class="dwca-values" name="values" value="${au.org.ala.data.value.ValueParser.asString(configuration.values)}" title="${message(code: 'page.label.values.detail')}"/>
                     </p>
                     <table class="table table-bordered table-striped table-condensed">
                         <tr>
