@@ -1,5 +1,6 @@
 package au.org.ala.data.dwca
 
+import grails.util.Mixin
 import au.org.ala.util.ResourceExtractor
 import spock.lang.Specification
 

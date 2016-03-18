@@ -3,6 +3,7 @@ package au.org.ala.data.dwca
 import grails.validation.Validateable
 import org.gbif.dwc.terms.DwcTerm
 import org.gbif.dwc.terms.Term
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 /**
  * @author Doug Palmer &lt;Doug.Palmer@csiro.au&gt;
@@ -12,7 +13,9 @@ import org.gbif.dwc.terms.Term
 @Validateable
 class CheckConfiguration {
     /** The source to validate from */
-    URL source = new URL("http://host/path/archive.zip")
+    URL source
+    /** The source archive file name */
+    CommonsMultipartFile sourceFile
     /** Check to see whether the archive has ALA-usable terms that can used to build a unique key */
     boolean checkUniqueTerms = true
     /** The list of terms used to build a unique key */
@@ -26,6 +29,8 @@ class CheckConfiguration {
 
 
     static constraints = {
+        source nullable: true, validator: { val, obj -> val != null || obj.sourceFile != null }
+        sourceFile nullable: true, validator: { val, obj -> val != null || obj.source != null }
     }
 
     String getUniqueTermList() {
@@ -34,5 +39,9 @@ class CheckConfiguration {
 
     void setUniqueTermList(String terms) {
         uniqueTerms = terms.split(",\\s*").collect { t -> DwcTerm.valueOf(t) }
+    }
+
+    String getSourceName() {
+        sourceFile && sourceFile.size > 0 ? sourceFile.originalFilename : source.toExternalForm()
     }
 }

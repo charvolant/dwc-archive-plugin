@@ -3,10 +3,9 @@ class DwcArchiveUrlMappings {
         "/ws/archive/check(.$rformat)?"(controller: 'archive', action: 'checkImageArchive') {
             format = { params.rformat ?: 'json' }
         }
+        "/ws/archive/flatten"(controller: 'archive', action: 'flattenMeasurementArchiveComplete')
         "/archive"(controller: 'archive', action: 'index')
-        "/archive/check"(controller: 'archive', action: 'checkImageArchive') {
-            format = 'html'
-        }
+        "/archive/$action"(controller: 'archive')
         "500"(view: '/error')
     }
 }

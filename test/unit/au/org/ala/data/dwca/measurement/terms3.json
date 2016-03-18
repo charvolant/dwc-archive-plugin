@@ -1,0 +1,14 @@
+{
+  "terms": [
+    {
+      "term": "turbidityInNtus",
+      "uri": "http://vocabulary.ala.org.au/turbidityInNtus",
+      "measurementType": "Turbidity (NTUs)",
+      "measurementUnit": null
+    }
+  ],
+  "values": {
+    "datasetName": "Bat Survey",
+    "datasetID": "123"
+  }
+}

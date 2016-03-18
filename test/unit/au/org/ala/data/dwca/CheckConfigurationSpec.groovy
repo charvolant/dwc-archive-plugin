@@ -1,7 +1,10 @@
 package au.org.ala.data.dwca
 
 import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
+import grails.test.mixin.web.ControllerUnitTestMixin
 import org.gbif.dwc.terms.DwcTerm
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 import spock.lang.Specification
 
 
@@ -10,8 +13,10 @@ import spock.lang.Specification
 
  * Copyright (c) 2015 CSIRO
  */
+@TestMixin(ControllerUnitTestMixin)
 class CheckConfigurationSpec extends Specification {
     def setup() {
+        mockCommandObject(CheckConfiguration)
     }
 
     def cleanup() {
@@ -54,6 +59,34 @@ class CheckConfigurationSpec extends Specification {
         config.setUniqueTermList("collectionCode, catalogNumber, xxx")
         then:
         thrown IllegalArgumentException
+    }
+
+
+    void "test validation 1"() {
+        when:
+        def config = new CheckConfiguration(source: new URL('http://host/path/archive.zip'))
+        def valid = config.validate()
+        then:
+        valid
+    }
+
+
+    void "test validation 2"() {
+        when:
+        def config = new CheckConfiguration(sourceFile: Mock(CommonsMultipartFile.class))
+        def valid = config.validate()
+        then:
+        valid
+    }
+
+
+
+    void "test validation 3"() {
+        when:
+        def config = new CheckConfiguration()
+        def valid = config.validate()
+        then:
+        !valid
     }
 
 }

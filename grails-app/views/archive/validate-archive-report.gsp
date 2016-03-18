@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><g:message code="page.report.title"/></title>
+    <title><g:message code="page.validate-archive-report.title"/></title>
     <meta name="layout" content="main"/>
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'dwc-archive.css')}" type="text/css">
 </head>
@@ -11,8 +11,8 @@
         <div class="message">${flash.message}</div>
     </g:if>
     <div id="headingBar" class="recordHeader heading-bar">
-        <h1><g:message code="page.report.title"/></h1>
-        <h2><g:message code="page.report.source" args="${configuration.source}"/></h2>
+        <h1><g:message code="page.validate-archive-report.title"/></h1>
+        <h2><g:message code="page.validate-archive-report.source" args="${[configuration.sourceName]}"/></h2>
     </div>
     <div id="report-confguration">
         <h3><g:message code="page.label.checks"/></h3>
@@ -33,8 +33,8 @@
     </div>
     <g:if test="${!report.hasViolations() && !report.hasCautions()}">
         <div class="dwca-ok">
-            <h3><g:message code="page.report.noProblems.heading"/></h3>
-            <p><g:message code="page.report.noProblems"/></p>
+            <h3><g:message code="page.validate-archive-report.noProblems.heading"/></h3>
+            <p><g:message code="page.validate-archive-report.noProblems"/></p>
         </div>
     </g:if>
     <g:if test="${report.hasViolations()}">

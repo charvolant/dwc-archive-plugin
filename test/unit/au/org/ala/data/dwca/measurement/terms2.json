@@ -1,0 +1,29 @@
+{
+  "terms": [
+    {
+      "term": "turbidityInNtus",
+      "uri": "http://vocabulary.ala.org.au/turbidityInNtus",
+      "measurementType": "Turbidity (NTUs)",
+      "measurementUnit": null
+    },
+    {
+      "term": "dissolvedOxygenInMilligramPerLitre",
+      "uri": "http://vocabulary.ala.org.au/dissolvedOxygenInMilligramPerLitre",
+      "measurementType": "Dissolved Oxygen (mg/L)",
+      "measurementUnit": null
+    },
+    {
+      "term": "samplerGroupName",
+      "uri": "http://vocabulary.ala.org.au/samplerGroupName",
+      "measurementType": "Sampler group name *",
+      "measurementUnit": null
+    },
+    {
+      "term": "didYouCalibrateYourEcMeter",
+      "uri": "http://vocabulary.ala.org.au/didYouCalibrateYourEcMeter",
+      "measurementType": "Did you calibrate your EC meter?",
+      "measurementUnit": null
+    }
+  ],
+  "filter": "datasetName == \"Bat Survey\""
+}
