@@ -55,8 +55,8 @@ class MeasurementArchiveService {
         configuration.addMappingFile()
         terms = configuration.termMap
         archive.getExtension(DwcTerm.MeasurementOrFact).iterator().each { Record record ->
-            String type = record.value(DwcTerm.measurementType)
-            String unit = record.value(DwcTerm.measurementUnit)
+            String type = record.value(DwcTerm.measurementType)?.trim()
+            String unit = record.value(DwcTerm.measurementUnit)?.trim()
 
             if (!terms.containsKey(type)) {
                 Term term = maker.convertTypeToTerm(type, unit)
