@@ -138,7 +138,7 @@ class ResourceExtractor {
             return deleted
         } else {
             if (dir.lastModified() < before.time) {
-                if (log) log.debug "Expired ${dir} last modified ${new Date(dir.lastModified)}"
+                if (log) log.debug "Expired ${dir} last modified ${new Date(dir.lastModified())}"
                 return dir.delete()
             } else
                 return false

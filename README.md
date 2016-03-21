@@ -53,6 +53,7 @@ a mapping file.
 | sourceFile | An uploaded DWCA file (via multipart/form-data) | |
 | mappingFile | A JSON configuration and mapping file (via multipart/form-data) -- see below for content | |
 | filter | A filter to apply to the entries -- see below for content | |
+| values | Additional values to add to the entries -- see below for content | |
 | format | Either `csv` or `dwca` for results in either CSV or DWCA form | csv |
 | allowNewTerms | If true, then the flattening will continue of unrecognised terms are encountered, with auto-generated mapping. If false, an error is returned if an unrecognised term is encountered | true | 
 
@@ -70,7 +71,11 @@ An example mapping file is:
       "measurementType":"Available Phosphate (mg/L)",
     }
   ],
-  "filter":"basisOfRecord == \"HumanObservation\""
+  "filter":"basisOfRecord == \"HumanObservation\"",
+  "values": {
+    "parentEventID": "Project-234",
+    "country": "Australia"
+  }
 }
 ```
 
@@ -99,6 +104,17 @@ The basic elements of the filters, in order of precedence, are:
 | conjunction | and| Logical conjunction | basisOfRecord == "HumanObservation" and catalogNumber == "1234" |
 | disjunction | or | Logical disjunction | basisOfRecord == "HumanObservation" or basisOfRecord == "Observation" |
 | grouping | ( ) | Expression grouping | not (basisOfRecord == "HumanObservation" or basisOfRecord == "Observation") |
+
+Note that there needs to be spaces between tokens such as identifiers or strings.
+That's what you get for using a trivial tokenizer.
+
+#### Values
+
+Values allow you to add or override terms in the resulting output.
+The syntax for additional values is `term1 = "value1", term2 = "value2", ...`
+For example `parentEventID = "Project-234", occurrenceStatus = "present"`
+
+Values can also be set in the mapping file, where a name: value dictionaty is used.
 
 #### Curl usage
 
