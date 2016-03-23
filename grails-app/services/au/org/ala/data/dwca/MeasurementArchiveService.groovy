@@ -90,9 +90,9 @@ class MeasurementArchiveService {
         measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
         def valueMap = configuration.valueMap
         def idTerm = archive.core.fieldsSorted[archive.core.id.index].term // You would expect archive.core.id.term to work, but noooo ...
-        def valueTerms = valueMap.values() as List
+        def valueTerms = valueMap.keySet() as List
         valueTerms = valueTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
-        def allTerms = (coreTerms + measurementTerms + valueTerms).unique { term -> term.qualifiedName() }
+        def allTerms = (coreTerms + measurementTerms + valueTerms).unique { term -> term?.qualifiedName() ?: 'unknown' }
         def extractValue = { StarRecord record, Term term ->
             String value = null
             if (valueMap.containsKey(term))
