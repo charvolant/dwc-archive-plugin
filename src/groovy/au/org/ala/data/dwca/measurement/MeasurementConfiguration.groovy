@@ -52,11 +52,14 @@ class MeasurementConfiguration implements Cloneable {
     boolean allowNewTerms = true
     /** The configuration contains some additional new terms */
     boolean hasNewTerms = false
+    /** The separator to use when stringing multiple values together */
+    String valueSeparator = '|'
 
 
     static constraints = {
         source nullable: true, validator: { val, obj -> val != null || obj.sourceFile != null }
         sourceFile nullable: true, validator: { val, obj -> val != null || obj.source != null }
+        valueSeparator empty: false, nullable: false
         format inList: VALID_FORMATS
     }
 

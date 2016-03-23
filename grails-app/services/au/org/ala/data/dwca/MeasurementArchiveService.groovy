@@ -86,44 +86,31 @@ class MeasurementArchiveService {
         def workDir = new File(grailsApplication.config.workDir)
         def termMap = configuration.termMap
         def coreTerms = archive.core.fieldsSorted.collect { field -> field.term }
-        def measurementTerms = termMap.keySet().collect { name -> termMap[name] }
+        def measurementTerms = termMap.values() as List
+        measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
         def valueMap = configuration.valueMap
         def idTerm = archive.core.fieldsSorted[archive.core.id.index].term // You would expect archive.core.id.term to work, but noooo ...
-        def valueTerms = valueMap.keySet().findAll { term -> !measurementTerms.contains(term) && !coreTerms.contains(term) }
-        measurementTerms = measurementTerms.unique { term -> term.qualifiedName() }
-        measurementTerms = measurementTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
-        def allTerms = coreTerms + measurementTerms + valueTerms
-        if (configuration.format == 'dwca') {
-            generator = new DwCAGenerator<StarRecord>(allTerms, workDir, configuration.filter, { StarRecord record, Term term ->
-                String value = null
-                if (valueMap.containsKey(term))
-                    value = valueMap[term]
-                else if (coreTerms.contains(term))
+        def valueTerms = valueMap.values() as List
+        valueTerms = valueTerms.sort { a, b -> a.simpleName() <=> b.simpleName() }
+        def allTerms = (coreTerms + measurementTerms + valueTerms).unique { term -> term.qualifiedName() }
+        def extractValue = { StarRecord record, Term term ->
+            String value = null
+            if (valueMap.containsKey(term))
+                value = valueMap[term]
+            else {
+                if (coreTerms.contains(term))
                     value = record.core().value(term)
-                else {
-                    def measurements = record.extension(DwcTerm.MeasurementOrFact)
-                    def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
-
-                    value = measurement?.value(DwcTerm.measurementValue)
-                }
-                value
-            }, archive.core.rowType, idTerm)
-        } else {
-            generator = new CSVGenerator<StarRecord>(allTerms, workDir, configuration.filter, { StarRecord record, Term term ->
-                String value = null
-                if (valueMap.containsKey(term))
-                    value = valueMap[term]
-                else if (coreTerms.contains(term))
-                    value = record.core().value(term)
-                else {
-                    def measurements = record.extension(DwcTerm.MeasurementOrFact)
-                    def measurement = measurements?.find { ext -> termMap[ext.value(DwcTerm.measurementType)] == term }
-
-                    value = measurement?.value(DwcTerm.measurementValue)
-                }
-                value
-            })
+                def measurements = record.extension(DwcTerm.MeasurementOrFact)
+                def values = measurements?.findAll { ext -> termMap[ext.value(DwcTerm.measurementType)]?.qualifiedName() == term.qualifiedName() } ?: []
+                values = values.collect { r -> r.value(DwcTerm.measurementValue) }
+                value = values.inject(value, { val, v -> val ? val + configuration.valueSeparator + v : v })
+            }
+            value
         }
+        if (configuration.format == 'dwca')
+            generator = new DwCAGenerator<StarRecord>(allTerms, workDir, configuration.filter, extractValue, archive.core.rowType, idTerm)
+        else
+            generator = new CSVGenerator<StarRecord>(allTerms, workDir, configuration.filter, extractValue)
         if (archive.metadataLocation) {
             // Copy metadata and add processing comment
             def eml = archive.getMetadata()
@@ -137,4 +124,5 @@ class MeasurementArchiveService {
         def file = generator.generate(archive.iterator())
         return [contentType: generator.mimeType, file: file]
     }
+
 }

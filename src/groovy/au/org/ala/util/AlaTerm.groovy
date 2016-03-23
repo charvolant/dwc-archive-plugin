@@ -1,5 +1,7 @@
 package au.org.ala.util
 
+import org.gbif.dwc.terms.DcTerm
+import org.gbif.dwc.terms.DwcTerm
 import org.gbif.dwc.terms.Term
 
 import javax.measure.unit.Unit
@@ -29,12 +31,22 @@ class AlaTerm implements Term {
      * Get a simple term.
      * <p>
      *     The {@link #DEFAULT_NAMESPACE} is used to construct a full URI
+     *     Or, if there is a DwC or DC term that matches, use that for a URI
      *
      * @param term The term,
      */
     void setTerm(String term) {
         this.term = term
-        this.uri = new URI(DEFAULT_NAMESPACE + term)
+        def standard = null
+        try {
+            standard = DwcTerm.valueOf(term)
+        } catch (IllegalArgumentException e) {
+            try {
+                standard = DcTerm.valueOf(term)
+            } catch (IllegalArgumentException e1) {
+            }
+        }
+        this.uri = standard ? new URI(standard.qualifiedName()) : new URI(DEFAULT_NAMESPACE + term)
     }
 
     /**

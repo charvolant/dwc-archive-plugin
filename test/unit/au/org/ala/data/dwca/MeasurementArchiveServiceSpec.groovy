@@ -1,5 +1,6 @@
 package au.org.ala.data.dwca
 
+import au.com.bytecode.opencsv.CSVReader
 import au.org.ala.data.dwca.measurement.MeasurementConfiguration
 import au.org.ala.util.AlaTerm
 import grails.test.mixin.TestFor
@@ -78,5 +79,32 @@ class MeasurementArchiveServiceSpec extends Specification {
         then:
         response.file.exists()
         response.contentType == "application/zip"
+    }
+
+    void "test pivot 3"() {
+        when:
+        def config = new MeasurementConfiguration(
+                source: this.class.getResource("bdrs3.zip"),
+                terms: [
+                        new AlaTerm(term: 'x', measurementType: 'X1'),
+                        new AlaTerm(term: 'x', measurementType: 'X2'),
+                        new AlaTerm(term: 'a', measurementType: 'X3'),
+                ]
+        )
+        response = service.pivot(config)
+        then:
+        response.file.exists()
+        response.contentType == "text/csv"
+        def reader = new CSVReader(new FileReader(response.file))
+        def line1 = reader.readNext()
+        line1[0] == 'catalogNumber'
+        line1[1] == 'scientificName'
+        line1[2] == 'a'
+        line1[3] == 'x'
+        def line2 = reader.readNext()
+        line2[0] == '233553'
+        line2[1] == 'Name'
+        line2[2] == 'Something'
+        line2[3] == 'Hello|Goodbye'
     }
 }

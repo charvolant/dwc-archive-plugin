@@ -56,6 +56,12 @@ a mapping file.
 | values | Additional values to add to the entries -- see below for content | |
 | format | Either `csv` or `dwca` for results in either CSV or DWCA form | csv |
 | allowNewTerms | If true, then the flattening will continue of unrecognised terms are encountered, with auto-generated mapping. If false, an error is returned if an unrecognised term is encountered | true | 
+| valueSeparator | The string to use when separating multiple values that all map onto the same term | \| |
+
+#### Term Names
+
+If a term from the mapping page can be found in either Darwin Core or Dublin Core then the URI of that term is used.
+This means that a term such as `location` can be mapped onto `locality` and share the same values as existing DwC terms.
 
 #### Mapping File
 

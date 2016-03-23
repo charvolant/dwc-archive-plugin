@@ -40,6 +40,9 @@
                     <p><g:message code="page.label.values"/>
                         <g:field type="textField" class="dwca-values" name="values" value="${au.org.ala.data.value.ValueParser.asString(configuration.values)}" title="${message(code: 'page.label.values.detail')}"/>
                     </p>
+                    <p><g:message code="page.label.valueSeparator"/>
+                    <g:field type="textField" name="valueSeparator" value="${configuration.valueSeparator}" title="${message(code: 'page.label.valueSeparator.detail')}"/>
+                    </p>
                     <table class="table table-bordered table-striped table-condensed">
                         <tr>
                             <th><g:message code="page.label.measurementType"/></th>

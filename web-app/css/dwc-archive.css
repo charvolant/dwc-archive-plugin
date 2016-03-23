@@ -93,3 +93,7 @@ input.dwca-term {
 input.dwca-filter {
     width: 64ex;
 }
+
+input.dwca-values {
+    width: 64ex;
+}
