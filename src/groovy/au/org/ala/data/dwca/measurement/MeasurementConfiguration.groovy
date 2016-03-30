@@ -51,7 +51,7 @@ class MeasurementConfiguration implements Cloneable {
     /** Does the configuration allow new terms to be created on the fly? */
     boolean allowNewTerms = true
     /** The configuration contains some additional new terms */
-    boolean hasNewTerms = false
+    List<Term> newTerms = []
     /** The separator to use when stringing multiple values together */
     String valueSeparator = '|'
 

@@ -140,8 +140,10 @@ class ArchiveController {
             }
         } else {
             configuration = measurementArchiveService.collectTerms(configuration)
-            if (configuration.hasNewTerms && !configuration.allowNewTerms) {
-                render(status: 400, text: "Unexpected terms were detected", contentType: "text/plain")
+            if (!configuration.newTerms?.isEmpty() && !configuration.allowNewTerms) {
+                def nt = configuration.newTerms.collect { it.qualifiedName() }
+                log.info("Unexpected terms were detected in ${configuration.source}: ${nt}")
+                render(status: 400, text: "Unexpected terms were detected: ${nt}", contentType: "text/plain")
 
             } else {
                 def archive = measurementArchiveService.pivot(configuration)
@@ -150,6 +152,5 @@ class ArchiveController {
                 archive.file.delete()
             }
         }
-
     }
 }

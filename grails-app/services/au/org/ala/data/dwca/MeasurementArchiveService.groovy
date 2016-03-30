@@ -61,7 +61,7 @@ class MeasurementArchiveService {
             if (!terms.containsKey(type)) {
                 Term term = maker.convertTypeToTerm(type, unit)
                 terms[type] = term
-                configuration.hasNewTerms = true
+                configuration.newTerms << term
             }
         }
         configuration.terms = terms.values() as List
