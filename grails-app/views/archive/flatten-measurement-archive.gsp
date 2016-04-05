@@ -40,6 +40,14 @@
                              value="${configuration?.mappingFile?.originalFilename}" title="${message(code: 'page.label.mappingFile.detail')}"/>
                 </div>
             </fieldset>
+            <fieldset>
+                <div class="checkbox-input">
+                    <g:checkBox id="fix_bdrs" name="fixBdrs" class="form-control"
+                                value="${configuration?.fixBdrs}"
+                                title="${message(code: 'page.label.fixBdrs.detail')}"/>
+                    <label for="fix_bdrs"><g:message code="page.label.fixBdrs"/></label>
+                </div>
+            </fieldset>
 
             <div class="form-submit">
                 <g:actionSubmit action="collectMeasurementTerms" value="${message(code: 'page.label.collect')}"/>

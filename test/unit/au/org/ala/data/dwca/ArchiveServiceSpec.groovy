@@ -4,6 +4,9 @@ import au.org.ala.util.ResourceExtractor
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.services.ServiceUnitTestMixin
+import org.gbif.dwc.terms.DwcTerm
+import org.gbif.dwc.text.Archive
+import org.gbif.dwc.text.ArchiveFactory
 import spock.lang.Specification
 
 /**
@@ -76,5 +79,109 @@ class ArchiveServiceSpec extends Specification {
         archiveService.cleanup()
         then:
         file.exists() == false
+    }
+
+    void "test fixBdrsStream 1"() {
+        when:
+        def is = new ByteArrayInputStream("Hello, there".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "Hello, there"
+    }
+
+    void "test fixBdrsStream 2"() {
+        when:
+        def is = new ByteArrayInputStream("'Enclosed', 'quotes'".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'Enclosed', 'quotes'"
+    }
+
+    void "test fixBdrsStream 3"() {
+        when:
+        def is = new ByteArrayInputStream("'O''Grady'".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'O''Grady'"
+    }
+
+    void "test fixBdrsStream 4"() {
+        when:
+        def is = new ByteArrayInputStream("'O\"'Grady'".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'O''Grady'"
+    }
+
+    void "test fixBdrsStream 5"() {
+        when:
+        def is = new ByteArrayInputStream("'Something \"quoted\" '".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'Something \"quoted\" '"
+    }
+
+    void "test fixBdrsStream 6"() {
+        when:
+        def is = new ByteArrayInputStream("'Something \"quoted\"".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'Something \"quoted\""
+    }
+
+    void "test fixBdrsStream 7"() {
+        when:
+        def is = new ByteArrayInputStream("'',''".bytes)
+        def os = new ByteArrayOutputStream(32)
+        archiveService.fixBdrsStream(is, os)
+        then:
+        def result = os.toString()
+        result == "'',''"
+    }
+
+    void "test fixBdrsDir 1"() {
+        boolean coreOK1 = false
+        boolean coreOK2 = false
+        boolean extOK1 = false
+        boolean extOK2 = false
+        when:
+        archiveService.withDwCA(this.class.getResource("bdrs4.zip"), { File location ->
+            // Have to do this in here because the file will be cleaned up afterwards
+            Archive archive = ArchiveFactory.openArchive(location)
+            def i, r, v
+            i = archive.core.iterator()
+            r = i.next()
+            v = r.value(DwcTerm.datasetName)
+            coreOK1 = v == "O'Grady"
+            r = i.next()
+            v = r.value(DwcTerm.datasetName)
+            coreOK2 = v == "O'Malley"
+            i = archive.getExtension(DwcTerm.MeasurementOrFact).iterator()
+            r = i.next()
+            v = r.value(DwcTerm.measurementRemarks)
+            extOK1 =  v == "survey: O'Grady"
+            r = i.next()
+            v = r.value(DwcTerm.measurementRemarks)
+            extOK2 = v == "survey: O'Malley"
+        },
+        null, true)
+        then:
+        coreOK1
+        coreOK2
+        extOK1
+        extOK2
+
     }
 }

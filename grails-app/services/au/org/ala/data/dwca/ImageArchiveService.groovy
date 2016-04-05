@@ -36,7 +36,9 @@ class ImageArchiveService {
                     report.addViolation(null, "archive.source", ex.getLocalizedMessage())
                     return report
 
-                })
+                },
+                command.fixBdrs
+         )
         } finally {
             if (workFile != null)
                 workFile.delete();

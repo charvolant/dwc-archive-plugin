@@ -41,7 +41,7 @@ class MeasurementArchiveService {
                 configuration.sourceFile.transferTo(workFile)
                 configuration.source = workFile.toURI().toURL()
             }
-            return (MeasurementConfiguration) archiveService.withDwCA(configuration.source, this.&performCollectTerms.curry(configuration))
+            return (MeasurementConfiguration) archiveService.withDwCA(configuration.source, this.&performCollectTerms.curry(configuration), null, configuration.fixBdrs)
         } finally {
         }
     }
@@ -77,7 +77,7 @@ class MeasurementArchiveService {
      * @return A dictionary with a file: and a contentType: suitable for plugging into a
      */
     def pivot(MeasurementConfiguration configuration) {
-        return archiveService.withDwCA(configuration.source, this.&performPivot.curry(configuration))
+        return archiveService.withDwCA(configuration.source, this.&performPivot.curry(configuration), null, configuration.fixBdrs)
     }
 
     def performPivot(MeasurementConfiguration configuration, File dir) {

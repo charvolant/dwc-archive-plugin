@@ -32,7 +32,14 @@
                     <g:field type="file" id="archive_file" name="sourceFile" class="form-control"
                              value="${configuration?.sourceFile?.originalFilename}" title="${message(code: 'page.label.sourceFile.detail')}"/>
                 </div>
-
+                <div class="checkbox-input">
+                    <g:checkBox id="fix_bdrs" name="fixBdrs" class="form-control"
+                                value="${configuration?.fixBdrs}"
+                                title="${message(code: 'page.label.fixBdrs.detail')}"/>
+                    <label for="fix_bdrs"><g:message code="page.label.fixBdrs"/></label>
+                </div>
+            </fieldset>
+            <fieldset>
                 <div class="checkbox-input">
                     <g:checkBox id="check_records" name="checkRecords" class="form-control"
                                 value="${configuration?.checkRecords}"

@@ -29,6 +29,7 @@
                 <fieldset>
                     <g:hiddenField name="source" value="${configuration.source}"/>
                     <g:hiddenField name="rootFileName" value="${configuration.rootFileName}"/>
+                    <g:hiddenField name="fixBdrs" value="${configuration.fixBdrs}"/>
                     <p><g:message code="page.label.format"/>
                     <g:radioGroup name="format" values="${configuration.VALID_FORMATS}" labels="${configuration.VALID_FORMATS}" value="${configuration.format}">
                         <span title="${message(code: 'page.label.format.' + it.label + '.detail')}">${it.radio} <g:message code="${'page.label.format.' + it.label}"/></span>

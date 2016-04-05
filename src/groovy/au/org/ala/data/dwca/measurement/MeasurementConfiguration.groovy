@@ -54,6 +54,8 @@ class MeasurementConfiguration implements Cloneable {
     List<Term> newTerms = []
     /** The separator to use when stringing multiple values together */
     String valueSeparator = '|'
+    /** Fix broken BDRS escape character */
+    boolean fixBdrs = false
 
 
     static constraints = {

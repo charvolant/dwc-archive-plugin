@@ -26,6 +26,8 @@ class CheckConfiguration {
     boolean checkImages = true
     /** Check to see whether the image files are present */
     boolean checkPresence = true
+    /** Fix broken BDRS escape character */
+    boolean fixBdrs = false
 
 
     static constraints = {
