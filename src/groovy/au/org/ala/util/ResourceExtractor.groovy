@@ -29,17 +29,26 @@ class ResourceExtractor {
 
     /**
      * Extract a resource from a URL to a target file.
+     * <p>
+     * Since the source URL may lock up, there is a connect and read timeout
      *
      * @param resource The source resource
      * @param target The target
+     * @param connectTimeout The connection timeout in milliseconds
+     * @param readTimeout The read timeout in milliseconds
      */
-    def extractResource(URL resource, File target) {
+    def extractResource(URL resource, File target, int connectTimeout, int readTimeout) {
+        URLConnection ic
         InputStream is = null
         OutputStream os = null
 
         target.parentFile.mkdirs()
         try {
-            is = resource.openStream()
+            ic = resource.openConnection()
+            ic.doOutput = false
+            ic.connectTimeout = connectTimeout
+            ic.readTimeout = readTimeout
+            is = ic.inputStream
             os = new FileOutputStream(target)
             copyStream(is, os)
         } finally {
@@ -95,7 +104,7 @@ class ResourceExtractor {
             zf.deleteOnExit()
             location.deleteOnExit()
         }
-        extractResource(resource, zf)
+        extractResource(resource, zf, 10000, 10000)
         unzip(zf, location, deleteOnExit)
         return location
     }

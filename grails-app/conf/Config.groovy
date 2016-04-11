@@ -18,11 +18,20 @@ if (new File(default_config).exists()) {
 println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
 println "default_config = ${default_config}"
 
-// Defalt settings
+// Default settings
 if (!workDir)
        workDir = "/data/${appName}/work"
 if (!temporaryFileLifetime)
     temporaryFileLifetime = 24 * 3600 * 1000L
+if (!connectTimeout)
+    connectTimeout = 10 * 1000
+if (!readTimeout)
+    readTimeout = 10 * 60 * 1000
+
+println "Work directory ${workDir}"
+println "Temportary file filetime ${temporaryFileLifetime}ms"
+println "Connect timeout ${connectTimeout}ms"
+println "Read timeout ${readTimeout}ms"
 
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = true
@@ -62,7 +71,7 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-    debug 'au.org.ala.data.dwca',
+    info 'au.org.ala.data.dwca',
             'grails.app.services.au.org.ala.data.dwca'
 
 }

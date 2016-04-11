@@ -16,6 +16,8 @@ class MeasurementArchiveServiceSpec extends Specification {
 
     def setup() {
         grailsApplication.config.workDir = System.getProperty("user.dir")
+        grailsApplication.config.connectTimeout = 10000
+        grailsApplication.config.readTimeout = 10000
         service = new MeasurementArchiveService()
         service.grailsApplication = grailsApplication
         service.archiveService = new ArchiveService()

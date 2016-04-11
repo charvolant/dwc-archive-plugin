@@ -22,6 +22,8 @@ class ArchiveServiceSpec extends Specification {
         work.delete()
         work.mkdirs()
         grailsApplication.config.workDir = work.getCanonicalPath()
+        grailsApplication.config.connectTimeout = 10000
+        grailsApplication.config.readTimeout = 10000
         archiveService = new ArchiveService()
         archiveService.grailsApplication = grailsApplication
     }
@@ -52,7 +54,7 @@ class ArchiveServiceSpec extends Specification {
         when:
         def message = archiveService.withDwCA(null) { location -> "Created archive!" } { ex -> "Invalid archive: ${ex.message}" }
         then:
-        message == "Invalid archive: Cannot invoke method openStream() on null object"
+        message == "Invalid archive: Cannot invoke method openConnection() on null object"
     }
 
     void "test with dwca 3"() {

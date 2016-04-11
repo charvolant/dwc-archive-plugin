@@ -36,7 +36,7 @@ class ArchiveService extends ResourceExtractor {
             workDir.mkdirs()
             log.debug("Work file for ${source} is ${workDir}")
             def zipFile = new File(workDir, "archive.zip")
-            extractResource(source, zipFile)
+            extractResource(source, zipFile, grailsApplication.config.connectTimeout, grailsApplication.config.readTimeout)
             def unzippedFolderLocation = new File(workDir, "unzipped")
             unzippedFolderLocation.mkdirs()
             unzip(zipFile, unzippedFolderLocation, false)
